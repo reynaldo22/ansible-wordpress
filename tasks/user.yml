@@ -1,0 +1,10 @@
+---
+
+- name: create user {{user_nginx}} for php server
+  user:
+    name: "{{user_nginx}}"
+    create_home: false
+    state: present
+    system: true
+    shell: "/bin/false"
+  tags: create

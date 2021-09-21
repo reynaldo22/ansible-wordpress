@@ -1,0 +1,110 @@
+---
+
+- name: install nfs-utils for nginx server
+  yum:
+    name: ['nfs-utils', 'libsemanage-python']
+    state: present
+  become: true
+  tags: install
+
+- name: start and enable nfs-server
+  service:
+    name: nfs-server
+    state: started
+    enabled: true
+  tags: start
+
+- name: start and enable rpcbind
+  service:
+    name: rpcbind
+    state: started
+    enabled: true
+  tags: start
+
+- name: create exports file
+  template:
+    src: exports.conf.j2
+    dest: /etc/exports
+  notify: restart-nfs-server
+  register: exports
+  tags: nfs
+
+- name: exportfs -r
+  shell: exportfs -r
+  when: exports.changed
+  tags: nfs
+
+- name: config firewall for nfs
+  firewalld:
+    service: "{{item}}"
+    permanent: true
+    state: enabled
+  with_items:
+    - "nfs"
+    - "mountd"
+    - "rpc-bind"
+  notify: restart-firewall
+  tags: firewall
+
+- name: config selinux can_network_connect
+  seboolean:
+    name: httpd_can_network_connect
+    state: true
+    persistent: true
+  when: ansible_selinux.status == "enabled"
+  tags: selinux
+
+- name: config selinux nfs read write
+  seboolean:
+    name: nfs_export_all_rw
+    state: true
+    persistent: true
+  when: ansible_selinux.status == "enabled"
+  tags: selinux
+
+- name: config selinux httpd_use_nfs
+  seboolean:
+    name: httpd_use_nfs
+    state: true
+    persistent: true
+  when: ansible_selinux.status == "enabled"
+  tags: selinux
+
+- name: install nfs-utils for php server
+  yum:
+    name: ['nfs-utils', 'libsemanage-python']
+    state: present
+  become: yes
+  tags: install
+
+- name: mount server to client
+  mount:
+    fstype: nfs
+    state: mounted
+    src: '{{ansible_default_ipv4.address}}:{{nginx_root_folder}}'
+    path: "{{php_root_path}}"
+  tags: nfs
+
+- name: config selinux can_network_connect
+  seboolean:
+    name: httpd_can_network_connect
+    state: true
+    persistent: true
+  when: ansible_selinux.status == "enabled"
+  tags: selinux
+
+- name: config selinux nfs read write
+  seboolean:
+    name: nfs_export_all_rw
+    state: true
+    persistent: true
+  when: ansible_selinux.status == "enabled"
+  tags: selinux
+
+- name: config selinux httpd_use_nfs
+  seboolean:
+    name: httpd_use_nfs
+    state: true
+    persistent: true
+  when: ansible_selinux.status == "enabled"
+  tags: selinux

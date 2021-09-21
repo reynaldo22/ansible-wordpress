@@ -1,0 +1,54 @@
+---
+
+- name: install php rpm remote repo
+  yum:
+    name: http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+    state: present
+  register: php
+  tags: install
+
+- name: disable repo and enable repo
+  yum:
+    enablerepo: '*'
+    disablerepo: 'remi-safe'
+  tags: disable
+
+- name: enable remi php{{php_version}}
+  shell: yum-config-manager --enable remi-php{{php_version}}
+  when: php.changed
+  tags: enable
+
+- name: installing packages
+  yum:
+    name: [
+      'epel-release',
+      'nginx',
+      'mariadb-server',
+      'mariadb',
+      'php',
+      'php-mysqlnd',
+      'php-fpm'
+    ]
+    state: latest
+  tags: install
+
+- name: start and enable nginx
+  service:
+    name: nginx
+    state: started
+    enabled: true
+  tags: start
+
+- name: start and enable mariadb
+  service:
+    name: mariadb
+    state: started
+    enabled: true
+  tags: start
+
+- name: config mariadb repo
+  template:
+    src: mariadb-repo.conf.j2
+    dest: /etc/yum.repos.d/MariaDB.repo
+  tags: configmariadb
+  when: mariadb_version != 5.5

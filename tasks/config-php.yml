@@ -1,0 +1,57 @@
+---
+
+- name: change user apache to nginx
+  lineinfile:
+    path: /etc/php-fpm.d/www.conf
+    regexp: '^user ='
+    line: 'user = nginx'
+    state: present
+  tags: configphp
+
+- name: change group apache to nginx
+  lineinfile:
+    path: /etc/php-fpm.d/www.conf
+    regexp: '^group ='
+    line: 'group = nginx'
+    state: present
+  tags: configphp
+
+- name: enable listen.owner and change owner to nginx
+  lineinfile:
+    path: /etc/php-fpm.d/www.conf
+    regexp: '^;listen.owner'
+    line: 'listen.owner = nginx'
+    state: present
+  tags: configphp
+
+- name: enable listen.group and change group to nginx
+  lineinfile:
+    path: /etc/php-fpm.d/www.conf
+    regexp: '^;listen.group'
+    line: 'listen.group = nginx'
+    state: present
+  tags: configphp
+
+- name: enable listen.mode
+  lineinfile:
+    path: /etc/php-fpm.d/www.conf
+    regexp: '^;listen.mode'
+    line: 'listen.mode = 0660'
+    state: present
+  tags: configphp
+
+- name: config port
+  lineinfile:
+    path: /etc/php-fpm.d/www.conf
+    regexp: '^listen ='
+    line: 'listen = {{ ansible_default_ipv4.address }}:{{php_fpm_port}};'
+    state: present
+  tags: configphp
+
+- name: change listen.allowed.clients
+  lineinfile:
+    path: /etc/php-fpm.d/www.conf
+    regexp: '^listen.allowed_clients'
+    line: 'listen.allowed_clients = {{ ansible_default_ipv4.address }};'
+    state: present
+  tags: configphp

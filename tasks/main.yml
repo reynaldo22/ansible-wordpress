@@ -1,0 +1,19 @@
+---
+
+- include: install.yml
+
+- include: user.yml
+
+- include: config-firewall.yml
+
+- include: config-php.yml
+
+- include: config-nginx.yml
+
+- include: create-directory-php.yml
+
+- include: create-nfs.yml
+
+- include: install-wordpress.yml
+
+- include: config-wordpress.yml

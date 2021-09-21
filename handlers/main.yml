@@ -1,0 +1,21 @@
+---
+
+- name: restart-nginx
+  service:
+    name: nginx
+    state: restarted
+
+- name: restart-php-fpm
+  service:
+    name: php-fpm
+    state: restarted
+
+- name: restart-firewall
+  service:
+    name: firewalld
+    state: restarted
+
+- name: restart-nfs-server
+  service:
+    name: nfs-server
+    state: restarted

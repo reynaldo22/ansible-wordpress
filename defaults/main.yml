@@ -1,0 +1,12 @@
+---
+
+php_version: 74
+mariadb_version: 5.5
+wordpress_version: 5.7
+user_nginx: 'nginx'
+nginx_config_path: '/etc/nginx/conf.d/default.conf'
+nginx_root_folder: '/usr/share/nginx/html'
+wordpress_config_path: '{{nginx_root_folder}}/wp-config.php'
+nginx_port: 80
+php_root_path: '/opt/php'
+php_fpm_port: 9000

@@ -1,0 +1,7 @@
+---
+
+- name: create directory for root php
+  file:
+    path: "{{php_root_path}}"
+    state: directory
+  tags: createdirectory

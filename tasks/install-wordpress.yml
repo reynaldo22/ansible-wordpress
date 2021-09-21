@@ -1,0 +1,16 @@
+---
+
+- name: download wordpress
+  unarchive:
+    src: https://wordpress.org/wordpress-{{wordpress_version}}.tar.gz
+    dest: "{{nginx_root_folder}}"
+    remote_src: true
+  tags: wordpress
+
+- name: move wordpress folder to root folder
+  copy:
+    src: "{{nginx_root_folder}}/wordpress/"
+    dest: "{{nginx_root_folder}}"
+    remote_src: true
+  notify: restart-nginx
+  tags: wordpress

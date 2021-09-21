@@ -1,0 +1,52 @@
+---
+
+- name: install mysql-python
+  yum:
+    name: MySQL-python
+    state: latest
+  tags: install
+
+- name: Removes anonymous user account for localhost
+  mysql_user:
+    name: ''
+    host_all: true
+    state: absent
+  tags: configwordpress
+
+- name: Removes all anonymous user accounts
+  mysql_user:
+    name: ''
+    host_all: true
+    state: absent
+  tags: configwordpress
+
+- name: create user
+  mysql_user:
+    name: "{{db_user}}"
+    password: "{{db_password}}"
+    priv: '*.*:ALL,GRANT'
+    state: present
+  tags: configwordpress
+
+- name: create database
+  mysql_db:
+    name: "{{db_name}}"
+    state: present
+  tags: configwordpress
+
+- name: copy wp-config-sample to wp-config
+  copy:
+    src: "{{nginx_root_folder}}/wp-config-sample.php"
+    dest: "{{nginx_root_folder}}/wp-config.php"
+    remote_src: true
+    force: no
+  tags: configwordpress
+
+- name: copy config wordpress
+  template:
+    src: wordpress.conf.j2
+    dest: "{{wordpress_config_path}}"
+  notify:
+    - restart-nginx
+    - restart-php-fpm
+  tags: configwordpress

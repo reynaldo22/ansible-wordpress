@@ -1,0 +1,24 @@
+---
+
+- name: config firewall for all servers
+  firewalld:
+    service: "{{ item }}"
+    permanent: true
+    state: enabled
+  with_items:
+    - "http"
+    - "https"
+  notify: restart-firewall
+  tags: firewall
+
+- name: Open port for all servers
+  firewalld:
+    port: "{{ item }}/tcp"
+    permanent: true
+    state: enabled
+    immediate: true
+  with_items:
+    - "{{ nginx_port }}"
+    - "{{ php_fpm_port }}"
+  notify: restart-firewall
+  tags: firewall

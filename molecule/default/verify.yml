@@ -1,0 +1,13 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+    - name: Verify wordpress service
+      uri:
+        url: "http://{{ ansible_default_ipv4.address }}"
+      register: wordpress_response
+      ignore_errors: "yes"
+    - name: Wordpress response assertion
+      assert:
+        that:
+          - wordpress_response is succeeded

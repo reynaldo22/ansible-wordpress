@@ -1,0 +1,27 @@
+upstream php {
+        server {{ansible_default_ipv4.address}}:{{php_fpm_port}};
+}
+
+server {
+    listen       80;
+    server_name  {{ansible_default_ipv4.address}};
+
+    root   {{nginx_root_folder}};
+    index index.php index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+    error_page 404 /404.html;
+    error_page 500 502 503 504 /50x.html;
+
+        location ~ \.php$ {
+            try_files $uri =404;
+            fastcgi_split_path_info ^(.+.php)(/.+)$;
+            fastcgi_pass php;
+            fastcgi_param SCRIPT_FILENAME {{php_root_path}}$fastcgi_script_name;
+            fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+            fastcgi_index index.php;
+            include fastcgi_params;
+        }
+}
